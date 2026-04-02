@@ -1,37 +1,80 @@
-# V2.5版本，添加管理员登录参数，需要到CF worker环境变量里添加 ADMIN_PASSWORD，网页增加Token管理，登陆后可用
-<img width="1339" height="575" alt="图片" src="https://github.com/user-attachments/assets/9edcd160-85ca-4d85-9344-6d3699161300" />
-<img width="1598" height="517" alt="图片" src="https://github.com/user-attachments/assets/e32a4353-6954-40c7-b0d2-01860eace439" />
-<img width="1370" height="674" alt="图片" src="https://github.com/user-attachments/assets/4a727f2d-8eb6-4edb-b9a8-d5fe68fbb2b1" />
-
 
 
 # Cloudflare 优选IP 收集器
-由于GitHub版的被官方以滥用资源为理由封禁了项目，特推出基于Cloudflare worker版的优选IP，更快，更高效，更直观！抛弃github Action~
-
-<p align="center">
-  <a href="https://www.youtube.com/watch?v=onrDa-iNJeY&pp=0gcJCRUKAYcqIYz" target="_blank">
-    <img src="https://img.icons8.com/color/48/000000/youtube-play.png" alt="YouTube" width="40" height="40"/>
-  </a>
-  &nbsp;&nbsp;
-  <a href="https://github.com/ethgan/CF-Worker-BestIP-collector" target="_blank">
-    <img src="https://img.icons8.com/ios-glyphs/48/000000/github.png" alt="GitHub" width="40" height="40"/>
-  </a>
-  &nbsp;&nbsp;
-  <a href="https://t.me/yt_hytj" target="_blank">
-    <img src="https://img.icons8.com/color/48/000000/telegram-app--v1.png" alt="Telegram" width="40" height="40"/>
-  </a>
-</p>
 
 一个基于 Cloudflare Workers 的优选 CF IP 地址收集与测速工具，自动从多个公开来源收集 Cloudflare IP 地址，并提供可视化界面和测速功能。
 
 ## 🌟 功能特点
+🎯 核心功能
+1. IP采集功能
+从多个来源网站自动采集Cloudflare IP地址
 
-- **自动收集**：定时从多个公开来源自动收集 Cloudflare IP 地址
-- **智能测速**：内置一键测速功能，支持批量测试 IP 延迟
-- **多种格式**：支持 TXT 格式下载和原始数据获取
-- **ITDog 集成**：支持导出 IP 列表到 ITDog 进行批量 TCPing 测试
-- **现代化界面**：简洁美观的 Web 界面，支持响应式设计
-- **实时排序**：测速完成后自动按延迟排序，快速找到最优 IP
+支持9个不同的数据源（ip.164746.xyz、ip.haogege.xyz等）
+
+批量并行请求，提高采集效率
+
+智能解析HTML、JSON、文本等多种格式
+
+2. IP信息提取
+延迟：从来源提取或测试获取延迟数据
+
+带宽：提取带宽信息（MB/s）
+
+运营商：自动识别电信、联通、移动或其他运营商
+
+数据源：记录IP来源，便于追溯
+
+3. 智能排序筛选
+排序规则：带宽优先（降序）+ 延迟升序
+
+优质IP筛选：每个运营商前4个，总共20个优质IP
+
+运营商均衡：确保移动、电信、联通都有覆盖
+
+4. 测速功能
+使用cdnjs.cloudflare.com进行真实测速
+
+测试延迟和带宽
+
+批量测速，支持自定义测试数量
+
+测速结果自动保存为优质IP
+
+🌐 Web界面功能
+主要操作按钮
+立即更新：从所有来源重新采集IP
+
+下载优质IP：下载纯文本格式的优质IP列表
+
+开始测速：手动触发Worker测速
+
+ITDog测速：跳转到ITDog网站进行第三方测速
+
+刷新状态：刷新页面数据
+
+IP展示
+显示IP地址、运营商、延迟、带宽
+
+按运营商分类统计
+
+一键复制单个或全部IP
+
+响应式设计，支持移动端
+
+📊 数据处理
+存储策略
+cloudflare_ips_detail：存储完整IP信息（含延迟/带宽/运营商）
+
+cloudflare_ips：仅存储IP地址列表
+
+cloudflare_fast_ips：存储筛选后的优质IP
+
+定时任务
+支持定时自动更新（通过scheduled事件）
+
+后台自动采集和更新IP数据
+
+
 
 
 ## 🚀 快速开始
@@ -44,53 +87,44 @@
 
 ### 部署步骤
 
-1. **克隆项目**
-   ```bash
-   git clone https://github.com/your-username/cloudflare-ip-collector.git
-   cd cloudflare-ip-collector
-   ```
+📦 部署步骤
+通过 Web 界面部署（推荐）
+登录 Cloudflare
 
-2. **创建 KV 命名空间**
-   - 在 Cloudflare Dashboard 中进入 Workers & Pages
-   - 创建新的 KV 命名空间，名称建议为 `IP_STORAGE`
-   - 记录下命名空间的 ID
+访问 dash.cloudflare.com
 
-3. **配置 Wrangler**
-   - 复制 `wrangler.toml.example` 为 `wrangler.toml`
-   - 更新 `wrangler.toml` 中的 KV 命名空间 ID：
+登录您的账号
 
-   ```toml
-   [[kv_namespaces]]
-   binding = "IP_STORAGE"
-   id = "your_kv_namespace_id_here"
-   ```
+进入 Workers 页面
 
-4. **部署到 Cloudflare**
-   ```bash
-   npm install
-   npx wrangler deploy
-   ```
+点击左侧菜单的 "Workers 和 Pages"
 
-5. **配置定时任务**
-   - 在 Cloudflare Dashboard 中为 Worker 添加定时触发器
-   - 建议设置为每 12 小时运行一次
-   - 修改定时更新操作如下
-   - 登录Cloudflare Dashboard，进入Workers & Pages。
-   - 选择您部署的Worker。
-   - 点击“设置”选项卡，然后选择“触发器”。
-   - 在“Cron 触发器”部分，点击“添加 Cron 触发器”。（推荐这种 简单）
-    <img width="1920" height="913" alt="图片" src="https://github.com/user-attachments/assets/032434ca-8586-44ae-bc97-999a13d50f8f" />
+点击 "创建应用程序" → "从Hello World!开始"
 
-  
-   - （另一种方式）输入Cron表达式：0 */12 * * * （每12小时执行一次）
-   - 选择时区（例如：UTC）。
-   - 点击“保存”
-   - Cron 表达式
-   - 推荐设置：0 */12 * * * （每 12 小时执行一次）
-   - 其他常用选项：
-   - 0 * * * * - 每小时执行一次
-   - 0 0 * * * - 每天午夜执行
-   - 0 */6 * * * - 每 6 小时执行一次
+配置 KV 命名空间
+
+text
+左侧菜单 → Workers 和 Pages → KV
+点击 "创建命名空间"
+名称：IP_STORAGE
+点击 "添加"
+绑定 KV 到 Worker
+
+在 Worker 编辑页面，点击 "设置" → "变量"
+
+找到 "KV 命名空间绑定"
+
+点击 "添加绑定"
+
+变量名：IP_STORAGE
+
+KV 命名空间：选择刚创建的 IP_STORAGE
+
+部署代码
+
+将完整代码复制到编辑器中
+
+点击 "保存并部署"
 
 ## 📖 使用方法
 
