@@ -101,7 +101,6 @@ cloudflare_fast_ips：存储筛选后的优质IP
 
 点击 "创建应用程序" → "从Hello World!开始"
 
-复制github上“workers.js”的全部内容去cloudflare，点击部署
 
 配置 KV 命名空间
 
@@ -112,25 +111,24 @@ cloudflare_fast_ips：存储筛选后的优质IP
 
 绑定 KV 到 Worker
 
-返回Workers 和 Pages 编辑页面 → 选择刚刚创建的项目 → 点击 "绑定" → 找到 "KV 命名空间"绑定
+返回Workers 和 Pages 编辑页面 → 选择刚刚创建的项目 → 点击 "绑定" → “添加绑定" → 找到 "KV 命名空间"，填入以下内容
 
-点击 "添加绑定"
-
-变量名：IP_STORAGE
+变量名称：IP_STORAGE
 
 KV 命名空间：选择刚创建的 IP_STORAGE
 
-点击“添加绑定”
+点击 "添加绑定"
 
-将完整代码复制到编辑器中
+点击”编辑代码“，删除里面所有内容，然后复制github上“workers.js”的全部内容去”编辑代码“的框中
 
-点击 "保存并部署"
+点击"部署"
+点击”访问“，看是否能正常访问，能正常访问就可以返回做定时自动更新任务的设置。
 
-## ⏰定时自动更新任务
+## ⏰ 定时自动更新任务
 
 点击 "Workers 和 Pages"
 
-找到您刚刚创建的项目，点击 "设置" → "触发事件" → "Cron 触发器"
+找到您刚刚创建的项目，点击 "设置" → "触发事件" → “添加” → "Cron 触发器"
 选择执行 Worker 的频率，3小时或者6小时一次就差不多，然后点击“添加”
 也可以选择“Cron 表达式”，然后填入时间，假如是每6小时执行一次自动更新就填入“0 */6 * * *”
 以下是参考，
@@ -142,6 +140,15 @@ KV 命名空间：选择刚创建的 IP_STORAGE
 
 推荐：0 */5 * * *  (每4小时更新一次)
 
+## 🌐 添加域名访问
+步骤1：准备域名
+确保您的域名已接入 Cloudflare（DNS 托管在 Cloudflare）
+
+步骤2：添加路由
+1. 登录 Cloudflare
+2. 进入 Workers 和 Pages"
+3. 点击您的 Worker 名称
+4. 点击 "设置" → "域和路由" → “添加” → “自定义域” → 填入子域名 → “添加域”
 
 ## 📖 使用方法
 
@@ -169,12 +176,16 @@ KV 命名空间：选择刚创建的 IP_STORAGE
 
 项目从多个公开的 Cloudflare IP 数据源自动收集，包括：
 
+
 - ip.164746.xyz
 - ip.haogege.xyz
-- stock.hostmonit.com/CloudFlareYes
-- api.uouin.com/cloudflare.html
+- api.uouin.com
 - addressesapi.090227.xyz
+- ip.flares.cloud
+- v2rayssr.com
+- cf.vvhan.com
 - www.wetest.vip
+
 
 ### 环境变量
 
@@ -219,6 +230,5 @@ npx wrangler deploy
 
 
 如果这个项目对你有帮助，请给个 ⭐️ 支持一下！
-## Star History
 
 
